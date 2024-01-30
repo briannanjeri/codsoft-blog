@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { PostsProvider } from "./components/postsContext";
+import { UserPostsProvider } from "./components/userPostsContext";
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
@@ -11,7 +12,9 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <PostsProvider>
-        <App />
+        <UserPostsProvider>
+          <App />
+        </UserPostsProvider>
       </PostsProvider>
     </BrowserRouter>
   </React.StrictMode>

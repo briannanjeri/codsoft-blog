@@ -1,6 +1,6 @@
 export interface post {
   id?: string;
   description: string;
-  thumbnail: string;
-  userId: string | undefined;
+  thumbnail: string | undefined;
+  userId?: string | undefined;
 }
