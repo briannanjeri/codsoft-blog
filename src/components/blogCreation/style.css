@@ -39,3 +39,9 @@
 .form-submit:hover {
     background-color: #0056b3;
 }
+
+@media (max-width: 600px) {
+    .form-container {
+        max-width: 100%;
+    }
+}

@@ -79,3 +79,35 @@
 .image-container:hover .description-overlay {
   opacity: 1;
 }
+
+
+@media (max-width: 600px) {
+  .post-image {
+    width: 100%;
+    height: auto;
+  }
+
+  .overlay {
+    width: 100%;
+    opacity: 0;
+  }
+
+  .description-overlay {
+    position: static;
+    text-align: center;
+    color: black;
+  }
+
+  .userPost-container {
+    text-align: center;
+  }
+
+  .icon-container {
+    flex-direction: column;
+    padding-top: 0;
+  }
+
+  .publish-button {
+    margin: 10px 0;
+  }
+}
