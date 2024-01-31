@@ -45,20 +45,17 @@ export const UserPost = ({ post }: Post) => {
           setPosts(updatedPublishedPosts);
         } catch (error) {
           if (error instanceof Error) {
-            console.log(error.message);
           }
         }
       }
     }
   };
   const handlePublishButton = async (userPost: post) => {
-    console.log("userpostss", userPost);
     if (userPost.id != undefined) {
       const publishedPostRef = doc(db, "publishedPosts", userPost.id);
       try {
         const publishedPostSnapshot = await getDoc(publishedPostRef);
         if (publishedPostSnapshot.exists()) {
-          console.log("post already published");
           return;
         } else {
           const newPublishedPostRef = await setDoc(publishedPostRef, userPost);
@@ -75,14 +72,11 @@ export const UserPost = ({ post }: Post) => {
         }
       } catch (error) {
         if (error instanceof Error) {
-          console.log(error.message);
         }
       }
     }
   };
-  useEffect(() => {
-    console.log("posts", posts);
-  }, [posts]);
+  useEffect(() => {}, [posts]);
 
   return (
     <div className="userPost-container">

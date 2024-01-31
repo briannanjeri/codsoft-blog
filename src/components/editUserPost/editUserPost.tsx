@@ -47,7 +47,6 @@ export const EditUserPost = () => {
           body: cloudData,
         }
       );
-      console.log("cloudinaryJsonData ", cloudinaryResponse);
 
       if (!cloudinaryResponse.ok) {
         const cloudinaryData = await cloudinaryResponse.json();
@@ -55,7 +54,6 @@ export const EditUserPost = () => {
       }
 
       const cloudinaryJsonData = await cloudinaryResponse.json();
-      console.log("cloudinaryJsonDataurl ", cloudinaryJsonData.url);
       if (description && image) {
         const updatedPost = {
           description,
@@ -100,7 +98,6 @@ export const EditUserPost = () => {
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
       }
     }
   };

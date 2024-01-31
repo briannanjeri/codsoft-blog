@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import "./style.css";
-import { addDoc, collection, getDoc, getDocs } from "firebase/firestore";
+import { addDoc, collection } from "firebase/firestore";
 import { Auth, db } from "../../firebaseConfig";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { post } from "../type";
@@ -12,7 +12,7 @@ export const BlogCreation = () => {
   const { usersPosts, setUsersPosts } = useUserPostsContext();
   const [description, setDescription] = useState("");
   const [image, setImage] = useState<File>();
-  const [user, loading] = useAuthState(Auth);
+  const [user] = useAuthState(Auth);
 
   const navigate = useNavigate();
 
@@ -33,7 +33,6 @@ export const BlogCreation = () => {
         alert("ensure all fields are filled");
         return;
       }
-      console.log("image", image);
       const cloudData = new FormData();
       cloudData.append("file", image);
       cloudData.append("upload_preset", "rqcxjkks");
@@ -59,18 +58,14 @@ export const BlogCreation = () => {
         thumbnail: cloudinaryJsonData.url,
         userId: user?.uid,
       };
-      console.log("newpost", newPost);
       const newPostRef = await addDoc(postsRef, newPost);
-      console.log("newPostRef", newPostRef);
       setDescription("");
       setUsersPosts([...usersPosts, { ...newPost, id: newPostRef.id }]);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error);
       }
     }
   };
-  console.log("description", description);
 
   return (
     <div>

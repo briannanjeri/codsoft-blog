@@ -6,7 +6,6 @@ import { Auth } from "../../firebaseConfig";
 import "./style.css";
 export const Navbar = () => {
   const [user, loading] = useAuthState(Auth);
-  console.log("innavabar", user);
   return (
     <div className="navbar">
       {user && (

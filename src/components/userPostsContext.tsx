@@ -18,11 +18,9 @@ const UserPostsContext = createContext<ContextData>({} as ContextData);
 export const UserPostsProvider = ({ children }: Props) => {
   const [usersPosts, setUsersPosts] = useState<post[]>([]);
   const [user, loading] = useAuthState(Auth);
-  console.log("userrrr", user);
   const fetchUserPosts = async () => {
     try {
       if (!user) {
-        console.log("user dont exist");
         return;
       }
       const postsRef = collection(db, "posts");
@@ -31,7 +29,6 @@ export const UserPostsProvider = ({ children }: Props) => {
       );
       if (postQuerySnapshot.empty) {
         //user has no post
-        console.log("user has no post");
         return;
       }
       const data: post[] = postQuerySnapshot.docs.map((doc) => ({
@@ -39,18 +36,15 @@ export const UserPostsProvider = ({ children }: Props) => {
         thumbnail: doc.data().thumbnail,
         description: doc.data().description,
       }));
-      console.log("data", data);
       setUsersPosts(data);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
       }
     }
   };
   useEffect(() => {
     fetchUserPosts();
   }, [user?.uid]);
-  console.log("usersPostsssss", usersPosts);
 
   return (
     <div>

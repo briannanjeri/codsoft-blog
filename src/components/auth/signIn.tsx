@@ -5,20 +5,14 @@ import {
   GoogleAuthProvider,
   User,
 } from "firebase/auth";
-import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate } from "react-router-dom";
-import { Auth, app, db } from "../../firebaseConfig";
-import { collection, doc, getDoc, setDoc } from "firebase/firestore";
+import { app, db } from "../../firebaseConfig";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import "./style.css";
 const SignIn = () => {
-  const [SignedInUser, setSignedInUser] = useState<User>();
-
   const navigate = useNavigate();
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
-  //   if (loading) {
-  //     return <div>loading...</div>;
-  //   }
 
   const logIn = async () => {
     try {
@@ -28,7 +22,6 @@ const SignIn = () => {
       const userQuerySnapShot = await getDoc(userDocRef);
       if (userQuerySnapShot.exists()) {
         navigate("/");
-        console.log("user exists");
         return;
       }
       const newUser = {
@@ -38,12 +31,8 @@ const SignIn = () => {
       };
       const newUserDocRef = await setDoc(userDocRef, newUser);
       navigate("/");
-
-      console.log("newuserdofref", newUserDocRef);
-      console.log("user added to firestore with Id", newUserDocRef);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
       }
     }
   };
