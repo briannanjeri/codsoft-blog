@@ -6,17 +6,24 @@ import { Auth, db } from "../../firebaseConfig";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { post } from "../type";
 import { UsersPost } from "../usersPost/usersPost";
-import { usePostsContex } from "../postsContext";
 import { useUserPostsContext } from "../userPostsContext";
+import { useNavigate } from "react-router-dom";
 export const BlogCreation = () => {
   const { usersPosts, setUsersPosts } = useUserPostsContext();
   const [description, setDescription] = useState("");
-  const [image, setImage] = useState<string>();
+  const [image, setImage] = useState<File>();
   const [user, loading] = useAuthState(Auth);
+
+  const navigate = useNavigate();
+
+  if (!user?.uid) {
+    navigate("/sign-in");
+  }
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
-      setImage(file.name);
+      setImage(file);
     }
   };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -26,22 +33,45 @@ export const BlogCreation = () => {
         alert("ensure all fields are filled");
         return;
       }
+      console.log("image", image);
+      const cloudData = new FormData();
+      cloudData.append("file", image);
+      cloudData.append("upload_preset", "rqcxjkks");
+      cloudData.append("cloud_name", "djl1ysnon");
+      const cloudinaryResponse = await fetch(
+        "https://api.cloudinary.com/v1_1/djl1ysnon/image/upload",
+        {
+          method: "POST",
+          body: cloudData,
+        }
+      );
+
+      if (!cloudinaryResponse.ok) {
+        const cloudinaryData = await cloudinaryResponse.json();
+        throw new Error(cloudinaryData.error);
+      }
+
+      const cloudinaryJsonData = await cloudinaryResponse.json();
+
       const postsRef = collection(db, "posts");
       const newPost: post = {
         description,
-        thumbnail: image,
+        thumbnail: cloudinaryJsonData.url,
         userId: user?.uid,
       };
       console.log("newpost", newPost);
       const newPostRef = await addDoc(postsRef, newPost);
       console.log("newPostRef", newPostRef);
+      setDescription("");
       setUsersPosts([...usersPosts, { ...newPost, id: newPostRef.id }]);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.log(error);
       }
     }
   };
+  console.log("description", description);
+
   return (
     <div>
       <div className="form-container">
@@ -53,6 +83,7 @@ export const BlogCreation = () => {
             type="text"
             id="description"
             className="form-input"
+            value={description}
             placeholder="Enter description"
             onChange={(e) => setDescription(e.target.value)}
           />
@@ -66,7 +97,9 @@ export const BlogCreation = () => {
             accept="image/*"
             onChange={(e) => handleImageChange(e)}
           />
-          <input type="submit" className="form-submit" />
+          <button type="submit" className="form-submit">
+            Create
+          </button>
         </form>
       </div>
       <UsersPost />

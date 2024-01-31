@@ -1,15 +1,21 @@
-import React from "react";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import React, { useEffect, useState } from "react";
+import {
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  User,
+} from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate } from "react-router-dom";
-import { app, db } from "../../firebaseConfig";
+import { Auth, app, db } from "../../firebaseConfig";
 import { collection, doc, getDoc, setDoc } from "firebase/firestore";
 import "./style.css";
 const SignIn = () => {
+  const [SignedInUser, setSignedInUser] = useState<User>();
+
   const navigate = useNavigate();
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
-  const [loading] = useAuthState(auth);
   //   if (loading) {
   //     return <div>loading...</div>;
   //   }
@@ -31,6 +37,8 @@ const SignIn = () => {
         email: user.email,
       };
       const newUserDocRef = await setDoc(userDocRef, newUser);
+      navigate("/");
+
       console.log("newuserdofref", newUserDocRef);
       console.log("user added to firestore with Id", newUserDocRef);
     } catch (error) {
@@ -39,11 +47,12 @@ const SignIn = () => {
       }
     }
   };
+
   return (
     <div className="signin-popup-container">
       <div className="popup-title">Access granted upon sign-in</div>
       <button className="signin-button" onClick={logIn}>
-        SignIn
+        SignIn With Google
       </button>
     </div>
   );

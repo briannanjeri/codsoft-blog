@@ -4,23 +4,26 @@ import { useUserPostsContext } from "../userPostsContext";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
+import { usePostsContex } from "../postsContext";
 
 export const EditUserPost = () => {
   const { usersPosts, setUsersPosts } = useUserPostsContext();
+  const { posts, setPosts } = usePostsContex();
+
   const [description, setDescription] = useState("");
-  const [image, setImage] = useState<string>();
+  const [image, setImage] = useState<File | string>();
   const { postId } = useParams();
   const navigate = useNavigate();
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
-      setImage(file.name);
+      setImage(file);
     }
   };
 
   useEffect(() => {
     const post = usersPosts.find((post) => post.id == postId);
-    if (post) {
+    if (post?.thumbnail && post?.description) {
       setDescription(post.description);
       setImage(post.thumbnail);
     }
@@ -31,10 +34,32 @@ export const EditUserPost = () => {
   ) => {
     e.preventDefault();
     try {
+      const cloudData = new FormData();
+      {
+        image != undefined && cloudData.append("file", image);
+      }
+      cloudData.append("upload_preset", "rqcxjkks");
+      cloudData.append("cloud_name", "djl1ysnon");
+      const cloudinaryResponse = await fetch(
+        "https://api.cloudinary.com/v1_1/djl1ysnon/image/upload",
+        {
+          method: "POST",
+          body: cloudData,
+        }
+      );
+      console.log("cloudinaryJsonData ", cloudinaryResponse);
+
+      if (!cloudinaryResponse.ok) {
+        const cloudinaryData = await cloudinaryResponse.json();
+        throw new Error(cloudinaryData.error);
+      }
+
+      const cloudinaryJsonData = await cloudinaryResponse.json();
+      console.log("cloudinaryJsonDataurl ", cloudinaryJsonData.url);
       if (description && image) {
         const updatedPost = {
           description,
-          thumbnail: image,
+          thumbnail: cloudinaryJsonData.url,
         };
         if (postId) {
           const postRef = doc(db, "posts", postId);
@@ -53,8 +78,13 @@ export const EditUserPost = () => {
                   ? { ...userPost, ...updatedData }
                   : userPost
               );
-              console.log("updatedUserPosts", updatedUserPosts);
               setUsersPosts(updatedUserPosts);
+              const updatedPublishedPosts = posts.map((publishedPost) =>
+                publishedPost.id === postId
+                  ? { ...publishedPost, ...updatedData }
+                  : publishedPost
+              );
+              setPosts(updatedPublishedPosts);
               navigate("/blog-creation-page");
             }
           }

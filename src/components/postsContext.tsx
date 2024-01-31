@@ -17,23 +17,23 @@ const PostsContext = createContext<ContextData>({} as ContextData);
 export const PostsProvider = ({ children }: Props) => {
   const [posts, setPosts] = useState<post[]>([]);
 
-  // const fetchPosts = async () => {
-  //   const postsRef = collection(db, "posts");
-  //   const postQuerySnapshot = await getDocs(postsRef);
-  //   const usersPost: post[] = [];
-  //   if (postQuerySnapshot) {
-  //     postQuerySnapshot.docs.map((doc) =>
-  //       usersPost.push({
-  //         id: doc.id,
-  //         ...doc.data(),
-  //       } as post)
-  //     );
-  //   }
-  //   setPosts(usersPost);
-  // };
-  // useEffect(() => {
-  //   fetchPosts();
-  // }, []);
+  const fetchPublishedPosts = async () => {
+    const publishedPostsRef = collection(db, "publishedPosts");
+    const postQuerySnapshot = await getDocs(publishedPostsRef);
+    const usersPost: post[] = [];
+    if (postQuerySnapshot) {
+      postQuerySnapshot.docs.map((doc) =>
+        usersPost.push({
+          id: doc.id,
+          ...doc.data(),
+        } as post)
+      );
+    }
+    setPosts(usersPost);
+  };
+  useEffect(() => {
+    fetchPublishedPosts();
+  }, []);
 
   return (
     <div>
