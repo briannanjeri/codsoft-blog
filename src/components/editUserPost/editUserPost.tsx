@@ -79,6 +79,14 @@ export const EditUserPost = () => {
                   : userPost
               );
               setUsersPosts(updatedUserPosts);
+              const publishedPostRef = doc(db, "publishedPosts", postId);
+              const publishedQuerySnapShot = await getDoc(publishedPostRef);
+              if (publishedQuerySnapShot.exists()) {
+                const data = publishedQuerySnapShot.data();
+                const updatedPublishedPost = { ...data, ...updatedData };
+                await updateDoc(publishedPostRef, updatedPublishedPost);
+              }
+
               const updatedPublishedPosts = posts.map((publishedPost) =>
                 publishedPost.id === postId
                   ? { ...publishedPost, ...updatedData }
